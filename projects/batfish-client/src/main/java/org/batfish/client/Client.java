@@ -490,7 +490,7 @@ public class Client extends AbstractClient implements IClient {
       case interactive:
         try {
           _reader = new ConsoleReader();
-          Path historyPath = Paths.get(System.getenv(ENV_HOME), HISTORY_FILE);
+        Path historyPath = Paths.get(System.getProperty("user.home"), HISTORY_FILE);
           historyPath.toFile().createNewFile();
           FileHistory history = new FileHistory(historyPath.toFile());
           _reader.setHistory(history);
@@ -2671,7 +2671,7 @@ public class Client extends AbstractClient implements IClient {
   }
 
   private void runStartupFile() {
-    Path startupFilePath = Paths.get(System.getenv(ENV_HOME), STARTUP_FILE);
+    Path startupFilePath = Paths.get(System.getProperty("user.home"), STARTUP_FILE);
     if (Files.exists(startupFilePath)) {
       List<String> commands = readCommands(startupFilePath);
       boolean result = processCommands(commands);
