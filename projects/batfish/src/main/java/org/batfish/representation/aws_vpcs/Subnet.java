@@ -147,14 +147,14 @@ public class Subnet implements AwsVpcEntity, Serializable {
     // generate a prefix for the link between the VPC router and the subnet
     Prefix vpcSubnetLinkPrefix = awsVpcConfiguration.getNextGeneratedLinkSubnet();
     Prefix subnetIfacePrefix = vpcSubnetLinkPrefix;
-    Prefix vpcIfacePrefix =
-        new Prefix(vpcSubnetLinkPrefix.getEndAddress(), vpcSubnetLinkPrefix.getPrefixLength());
+    Ip vpcIfaceAddress = vpcSubnetLinkPrefix.getEndAddress();
+    Prefix vpcIfacePrefix = new Prefix(vpcIfaceAddress, vpcSubnetLinkPrefix.getPrefixLength());
 
     // add an interface that faces the VPC router
     String subnetIfaceName = _vpcId;
     Utils.newInterface(subnetIfaceName, cfgNode, subnetIfacePrefix);
 
-    // add the interface to the vpc router
+    // add a corresponding interface on the VPC router facing the subnet
     Configuration vpcConfigNode = awsVpcConfiguration.getConfigurationNodes().get(_vpcId);
     String vpcIfaceName = _subnetId;
     Utils.newInterface(vpcIfaceName, vpcConfigNode, vpcIfacePrefix);
@@ -170,69 +170,77 @@ public class Subnet implements AwsVpcEntity, Serializable {
     vpcConfigNode.getDefaultVrf().getStaticRoutes().add(vpcToSubnetRoute);
 
     // attach to igw if it exists
-    _internetGatewayId = awsVpcConfiguration.getVpcs().get(_vpcId).getInternetGatewayId();
-    Ip igwAddress = null;
-    if (_internetGatewayId != null) {
-      // generate a prefix for the link between the igw and the subnet
-      Prefix igwSubnetLinkPrefix = awsVpcConfiguration.getNextGeneratedLinkSubnet();
-      Prefix subnetIgwIfacePrefix = igwSubnetLinkPrefix;
-      Prefix igwSubnetIfacePrefix =
-          new Prefix(igwSubnetLinkPrefix.getEndAddress(), igwSubnetLinkPrefix.getPrefixLength());
-
-      // add an interface that faces the igw
-      String subnetIgwIfaceName = _internetGatewayId;
-      Utils.newInterface(subnetIgwIfaceName, cfgNode, subnetIgwIfacePrefix);
-
-      // add an interface to the igw facing the subnet
-      Configuration igwConfigNode =
-          awsVpcConfiguration.getConfigurationNodes().get(_internetGatewayId);
-      String igwSubnetIfaceName = _subnetId;
-      Utils.newInterface(igwSubnetIfaceName, igwConfigNode, igwSubnetIfacePrefix);
-      igwAddress = igwSubnetIfacePrefix.getAddress();
-    }
+    //    _internetGatewayId = awsVpcConfiguration.getVpcs().get(_vpcId).getInternetGatewayId();
+    //    Ip igwAddress = null;
+    //    if (_internetGatewayId != null) {
+    //      // generate a prefix for the link between the igw and the subnet
+    //      Prefix igwSubnetLinkPrefix = awsVpcConfiguration.getNextGeneratedLinkSubnet();
+    //      Prefix subnetIgwIfacePrefix = igwSubnetLinkPrefix;
+    //      Prefix igwSubnetIfacePrefix =
+    //          new Prefix(igwSubnetLinkPrefix.getEndAddress(),
+    // igwSubnetLinkPrefix.getPrefixLength());
+    //
+    //      // add an interface that faces the igw
+    //      String subnetIgwIfaceName = _internetGatewayId;
+    //      Utils.newInterface(subnetIgwIfaceName, cfgNode, subnetIgwIfacePrefix);
+    //
+    //      // add an interface to the igw facing the subnet
+    //      Configuration igwConfigNode =
+    //          awsVpcConfiguration.getConfigurationNodes().get(_internetGatewayId);
+    //      String igwSubnetIfaceName = _subnetId;
+    //      Utils.newInterface(igwSubnetIfaceName, igwConfigNode, igwSubnetIfacePrefix);
+    //      igwAddress = igwSubnetIfacePrefix.getAddress();
+    //    }
 
     // attach to vgw if it exists
-    _vpnGatewayId = awsVpcConfiguration.getVpcs().get(_vpcId).getVpnGatewayId();
-    Ip vgwAddress = null;
-    if (_vpnGatewayId != null) {
-      // generate a prefix for the link between the vgw and the subnet
-      Prefix vgwSubnetLinkPrefix = awsVpcConfiguration.getNextGeneratedLinkSubnet();
-      Prefix subnetVgwIfacePrefix = vgwSubnetLinkPrefix;
-      Prefix vgwSubnetIfacePrefix =
-          new Prefix(vgwSubnetLinkPrefix.getEndAddress(), vgwSubnetLinkPrefix.getPrefixLength());
-
-      // add an interface that faces the vgw
-      String subnetVgwIfaceName = _vpnGatewayId;
-      Utils.newInterface(subnetVgwIfaceName, cfgNode, subnetVgwIfacePrefix);
-
-      // add an interface to the igw facing the subnet
-      Configuration vgwConfigNode = awsVpcConfiguration.getConfigurationNodes().get(_vpnGatewayId);
-      String vgwSubnetIfaceName = _subnetId;
-      Interface vgwSubnetIface = new Interface(vgwSubnetIfaceName, vgwConfigNode);
-      vgwSubnetIface.setPrefix(vgwSubnetIfacePrefix);
-      vgwSubnetIface.getAllPrefixes().add(vgwSubnetIfacePrefix);
-      vgwConfigNode.getInterfaces().put(vgwSubnetIfaceName, vgwSubnetIface);
-      vgwConfigNode.getDefaultVrf().getInterfaces().put(vgwSubnetIfaceName, vgwSubnetIface);
-      vgwAddress = vgwSubnetIfacePrefix.getAddress();
-    }
+    //    _vpnGatewayId = awsVpcConfiguration.getVpcs().get(_vpcId).getVpnGatewayId();
+    //    Ip vgwAddress = null;
+    //    if (_vpnGatewayId != null) {
+    //      // generate a prefix for the link between the vgw and the subnet
+    //      Prefix vgwSubnetLinkPrefix = awsVpcConfiguration.getNextGeneratedLinkSubnet();
+    //      Prefix subnetVgwIfacePrefix = vgwSubnetLinkPrefix;
+    //      Prefix vgwSubnetIfacePrefix =
+    //          new Prefix(vgwSubnetLinkPrefix.getEndAddress(),
+    // vgwSubnetLinkPrefix.getPrefixLength());
+    //
+    //      // add an interface that faces the vgw
+    //      String subnetVgwIfaceName = _vpnGatewayId;
+    //      Utils.newInterface(subnetVgwIfaceName, cfgNode, subnetVgwIfacePrefix);
+    //
+    //      // add an interface to the igw facing the subnet
+    //      Configuration vgwConfigNode =
+    // awsVpcConfiguration.getConfigurationNodes().get(_vpnGatewayId);
+    //      String vgwSubnetIfaceName = _subnetId;
+    //      Interface vgwSubnetIface = new Interface(vgwSubnetIfaceName, vgwConfigNode);
+    //      vgwSubnetIface.setPrefix(vgwSubnetIfacePrefix);
+    //      vgwSubnetIface.getAllPrefixes().add(vgwSubnetIfacePrefix);
+    //      vgwConfigNode.getInterfaces().put(vgwSubnetIfaceName, vgwSubnetIface);
+    //      vgwConfigNode.getDefaultVrf().getInterfaces().put(vgwSubnetIfaceName, vgwSubnetIface);
+    //      vgwAddress = vgwSubnetIfacePrefix.getAddress();
+    //    }
 
     // lets find the right route table for this subnet
-    RouteTable myRouteTable = findMyRouteTable(awsVpcConfiguration.getRouteTables());
+    //    RouteTable myRouteTable = findMyRouteTable(awsVpcConfiguration.getRouteTables());
 
-    for (Route route : myRouteTable.getRoutes()) {
-      StaticRoute sRoute =
-          route.toStaticRoute(
-              awsVpcConfiguration,
-              vpcIfacePrefix.getAddress(),
-              igwAddress,
-              vgwAddress,
-              this,
-              cfgNode);
-      if (sRoute != null) {
-        cfgNode.getDefaultVrf().getStaticRoutes().add(sRoute);
-      }
-    }
+    // Install a default static route towards the VPC router.
+    StaticRoute defaultRoute =
+        StaticRoute.builder().setNetwork(Prefix.ZERO).setNextHopIp(vpcIfaceAddress).build();
+    cfgNode.getDefaultVrf().getStaticRoutes().add(defaultRoute);
 
+    //    for (Route route : myRouteTable.getRoutes()) {
+    //      StaticRoute sRoute =
+    //          route.toStaticRoute(
+    //              awsVpcConfiguration,
+    //              vpcIfacePrefix.getAddress(),
+    //              igwAddress,
+    //              vgwAddress,
+    //              this,
+    //              cfgNode);
+    //      if (sRoute != null) {
+    //        cfgNode.getDefaultVrf().getStaticRoutes().add(sRoute);
+    //      }
+    //    }
+    //
     NetworkAcl myNetworkAcl = findMyNetworkAcl(awsVpcConfiguration.getNetworkAcls());
 
     IpAccessList inAcl = myNetworkAcl.getIngressAcl();
@@ -243,8 +251,8 @@ public class Subnet implements AwsVpcEntity, Serializable {
     for (Entry<String, Interface> eIface : cfgNode.getDefaultVrf().getInterfaces().entrySet()) {
       String ifaceName = eIface.getKey();
       if (awsVpcConfiguration.getVpcs().containsKey(ifaceName)
-          || awsVpcConfiguration.getInternetGateways().containsKey(ifaceName)
-          || awsVpcConfiguration.getVpnGateways().containsKey(ifaceName)) {
+      /*|| awsVpcConfiguration.getInternetGateways().containsKey(ifaceName)
+      || awsVpcConfiguration.getVpnGateways().containsKey(ifaceName)*/ ) {
         Interface iface = eIface.getValue();
         iface.setIncomingFilter(inAcl);
         iface.setOutgoingFilter(outAcl);
