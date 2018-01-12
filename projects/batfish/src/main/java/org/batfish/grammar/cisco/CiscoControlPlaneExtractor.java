@@ -3654,7 +3654,7 @@ public class CiscoControlPlaneExtractor extends CiscoParserBaseListener
     // FIXME: Handle interface sources
     Ip source = null;
     if (ctx.IP_ADDRESS() != null) {
-        source = toIp(ctx.IP_ADDRESS());
+      source = toIp(ctx.IP_ADDRESS());
     }
     for (Interface iface : _currentInterfaces) {
       iface.getTunnelInitIfNull().setSource(source);
