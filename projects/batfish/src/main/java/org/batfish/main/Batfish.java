@@ -4602,7 +4602,7 @@ public class Batfish extends PluginConsumer implements IBatfish {
     // run jobs and get resulting flows
     flows = computeNodOutput(jobs);
 
-    getDataPlanePlugin().processFlows(dataPlane,flows);
+    getDataPlanePlugin().processFlows(flows);
 
     AnswerElement answerElement = getHistory();
     return answerElement;

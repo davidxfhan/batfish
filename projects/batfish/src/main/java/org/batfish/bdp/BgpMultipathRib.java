@@ -25,6 +25,9 @@ public class BgpMultipathRib extends AbstractRib<BgpRoute> {
     BgpProcess proc = _owner._vrf.getBgpProcess();
     if (proc != null) {
       _multipathEquivalentAsPathMatchMode = proc.getMultipathEquivalentAsPathMatchMode();
+      if (_multipathEquivalentAsPathMatchMode == null) {
+        throw new BatfishException("BgpProcess is null");
+      }
     }
   }
 
