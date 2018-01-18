@@ -549,6 +549,7 @@ class AbstractionBuilder {
         abstractBgp.setMultipathIbgp(bgp.getMultipathIbgp());
         abstractBgp.setRouterId(bgp.getRouterId());
         abstractBgp.setOriginationSpace(bgp.getOriginationSpace());
+        abstractBgp.setMultipathEquivalentAsPathMatchMode(bgp.getMultipathEquivalentAsPathMatchMode());
         // TODO: set bgp neighbors accordingly
         // Copy over neighbors
         SortedMap<Prefix, BgpNeighbor> abstractBgpNeighbors = new TreeMap<>();
